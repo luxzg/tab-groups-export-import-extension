@@ -57,6 +57,7 @@ Once they are open, proceed.
 2. Click:
    **Export open tab groups → JSON**
 3. Save the generated JSON file
+4. The same JSON content is also automatically placed in the popup text area for copy/paste use
 
 You now have a portable snapshot.
 
@@ -90,7 +91,7 @@ The extension will:
 
 - Create windows (or use current window, based on your choice)
 - Recreate tab groups
-- Restore group title
+- Restore group title (with compatibility fallback logic)
 - Restore group color
 - Restore collapsed state
 - Restore pinned tabs

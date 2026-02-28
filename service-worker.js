@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
           saveAs: true
         });
 
-        sendResponse({ ok: true, filename });
+        sendResponse({ ok: true, filename, jsonText: json });
         return;
       }
 
@@ -170,11 +170,7 @@ async function importGroups(data, options = {}) {
       const tabIds = await createTabsInWindow(g.tabs || []);
       if (tabIds.length) {
         const groupId = await chrome.tabs.group({ tabIds, createProperties: { windowId: targetWindowId } });
-        await chrome.tabGroups.update(groupId, {
-          title: g.title || "",
-          color: g.color || "grey",
-          collapsed: !!g.collapsed
-        });
+        await restoreGroupMetadata(groupId, g);
         groupsCreated++;
       }
     }
@@ -210,6 +206,26 @@ async function importGroups(data, options = {}) {
   }
 
   return `windows=${windowsCreated}, groups=${groupsCreated}, tabs=${tabsCreated}, failedTabs=${tabsFailed}`;
+}
+
+async function restoreGroupMetadata(groupId, groupData) {
+  const title = typeof groupData?.title === "string" ? groupData.title : "";
+  const color = typeof groupData?.color === "string" ? groupData.color : "grey";
+  const collapsed = !!groupData?.collapsed;
+
+  try {
+    await chrome.tabGroups.update(groupId, { title, color, collapsed });
+    return;
+  } catch {}
+
+  try {
+    await chrome.tabGroups.update(groupId, { title, color });
+    return;
+  } catch {}
+
+  try {
+    await chrome.tabGroups.update(groupId, { title });
+  } catch {}
 }
 
 function sanitizeUrl(url) {

@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [1.3.0] - 2026-02-28 11:06:15 CET
+- Export now also returns JSON text to popup and auto-populates the text area for direct copy/paste.
+- File download export flow is kept unchanged (`saveAs` dialog still shown).
+- Improved tab group metadata restoration with compatibility fallbacks:
+  - try `title + color + collapsed`
+  - fallback to `title + color`
+  - fallback to `title` only
+- This fixes cases where group names were not restored on import destination.
+
 ## [1.2.0] - 2026-02-28 10:50:03 CET
 - Fixed export failure in MV3 service worker by replacing `URL.createObjectURL(...)` download flow with a `data:` URL download.
 - Reworked import UI to avoid popup file chooser crashes by switching to paste-based JSON import.

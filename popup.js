@@ -15,7 +15,14 @@ exportBtn.addEventListener("click", async () => {
       setStatus("Error: " + chrome.runtime.lastError.message);
       return;
     }
-    setStatus(resp?.ok ? `Exported:\n${resp.filename}` : `Export failed:\n${resp?.error || "unknown error"}`);
+    if (resp?.ok) {
+      if (resp.jsonText) {
+        jsonInput.value = resp.jsonText;
+      }
+      setStatus(`Exported:\n${resp.filename}\nJSON also placed in text area for copy/paste.`);
+      return;
+    }
+    setStatus(`Export failed:\n${resp?.error || "unknown error"}`);
   });
 });
 
