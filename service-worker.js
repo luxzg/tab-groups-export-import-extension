@@ -226,16 +226,6 @@ async function restoreGroupMetadata(groupId, groupData) {
 
   try {
     await chrome.tabGroups.update(groupId, { title, color, collapsed });
-    return;
-  } catch {}
-
-  try {
-    await chrome.tabGroups.update(groupId, { title, color });
-    return;
-  } catch {}
-
-  try {
-    await chrome.tabGroups.update(groupId, { title });
   } catch {}
 }
 

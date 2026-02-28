@@ -55,10 +55,10 @@ Once they are open, proceed.
 
 1. Click the extension icon
 2. Click:
-   **Read open tab groups → JSON in text area**
+   **Export tab data**
 3. JSON is placed in popup text area for copy/paste use
 4. Optional: click
-   **Download JSON from text area**
+   **Download JSON**
    to save it as a file
 
 You now have a portable snapshot.
@@ -86,8 +86,8 @@ Repeat the same loading steps in Brave:
 3. Copy all JSON text
 4. Paste JSON into the extension popup text area
 5. Click one of:
-   - **Import pasted JSON → recreate windows**
-   - **Import pasted JSON → current window**
+   - **Import to new window**
+   - **Import to current window**
 
 The extension will:
 
@@ -106,6 +106,25 @@ If the Brave sync is enabled tab groups will sync to other devices in your sync 
 ---
 
 # 7. Important Notes
+
+## Group Title Persistence
+
+On some Chromium builds, imported group titles may not be retained until a manual edit is made.
+
+Workaround:
+
+1. Right-click the imported group
+2. Choose edit group
+3. Add one character (or a space), then remove it
+4. Confirm/save
+
+After this manual edit, the title is typically retained.
+
+## Memory / Scale Warning
+
+Large imports (many groups/tabs/windows) can cause high memory usage.
+This is most noticeable when both source and destination browsers are open and many tabs are loading at once.
+If you hit memory pressure, import in smaller batches.
 
 ## Internal URLs
 

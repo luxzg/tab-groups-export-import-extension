@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [1.4.0] - 2026-02-28 12:03:58 CET
+- Renamed popup buttons for clarity:
+  - `Export tab data`
+  - `Download JSON`
+  - `Import to new window`
+  - `Import to current window`
+- `Download JSON` now always re-reads current open tab data before saving (ignores stale/edited textarea content).
+- Removed experimental retitle/refresh logic that did not reliably solve Chromium group-title persistence behavior.
+- Added explicit warnings in README and USAGE:
+  - manual one-time group-name edit may be required for title retention on some Chromium builds
+  - large imports can cause high memory usage/out-of-memory pressure
+
 ## [1.3.1] - 2026-02-28 11:12:08 CET
 - Split export into two separate actions:
   - Read open tab groups into popup JSON text area

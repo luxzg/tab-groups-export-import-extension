@@ -9,38 +9,44 @@ function setStatus(msg) {
   statusEl.textContent = msg || "";
 }
 
-exportBtn.addEventListener("click", async () => {
+function fetchLatestExportJson(onDone) {
   setStatus("Reading open tab groups...");
   chrome.runtime.sendMessage({ type: "EXPORT" }, (resp) => {
     if (chrome.runtime.lastError) {
       setStatus("Error: " + chrome.runtime.lastError.message);
+      onDone(null);
       return;
     }
     if (resp?.ok) {
-      if (resp.jsonText) {
-        jsonInput.value = resp.jsonText;
-      }
-      setStatus("JSON loaded into text area. Use Download button if you want a file.");
+      const jsonText = String(resp.jsonText || "");
+      jsonInput.value = jsonText;
+      onDone(jsonText);
       return;
     }
     setStatus(`Export failed:\n${resp?.error || "unknown error"}`);
+    onDone(null);
+  });
+}
+
+exportBtn.addEventListener("click", () => {
+  fetchLatestExportJson((jsonText) => {
+    if (jsonText != null) {
+      setStatus("JSON loaded into text area.");
+    }
   });
 });
 
 downloadBtn.addEventListener("click", () => {
-  const text = (jsonInput.value || "").trim();
-  if (!text) {
-    setStatus("Text area is empty. Export first or paste JSON.");
-    return;
-  }
-
-  setStatus("Downloading JSON...");
-  chrome.runtime.sendMessage({ type: "DOWNLOAD_JSON", jsonText: text }, (resp) => {
-    if (chrome.runtime.lastError) {
-      setStatus("Error: " + chrome.runtime.lastError.message);
-      return;
-    }
-    setStatus(resp?.ok ? `Downloaded:\n${resp.filename}` : `Download failed:\n${resp?.error || "unknown error"}`);
+  fetchLatestExportJson((jsonText) => {
+    if (jsonText == null) return;
+    setStatus("Downloading JSON...");
+    chrome.runtime.sendMessage({ type: "DOWNLOAD_JSON", jsonText }, (resp) => {
+      if (chrome.runtime.lastError) {
+        setStatus("Error: " + chrome.runtime.lastError.message);
+        return;
+      }
+      setStatus(resp?.ok ? `Downloaded:\n${resp.filename}` : `Download failed:\n${resp?.error || "unknown error"}`);
+    });
   });
 });
 

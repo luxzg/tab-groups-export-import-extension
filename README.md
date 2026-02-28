@@ -125,15 +125,26 @@ Migration scenario:
 Chrome → JSON → Brave
 
 1. Open all saved groups in Chrome
-2. Read JSON into popup text area
+2. Click `Export tab data`
    - No file dialog opens
    - JSON is immediately available for copy/paste
-3. (Optional) click download button to save JSON file
+3. (Optional) click `Download JSON` to save JSON file
 4. Import in Brave (paste JSON text into popup, then choose import mode button)
 5. Close tab groups in Brave and Chrome (they will be saved automatically)
 6. Done
 
 No manual regrouping or renaming required.
+
+---
+
+## Warnings
+
+- Group title persistence issue:
+  after import, some Chromium builds may not retain group titles unless you manually edit the name once.
+  Practical workaround: right-click group → Edit group → add one character (or space) and remove it.
+- Large import memory risk:
+  importing many windows/groups/tabs can spike memory usage because two browsers may be open with many tabs loading at once.
+  Prefer smaller batches when possible.
 
 ---
 
