@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 12px; width: 260px; }
+      button { width: 100%; padding: 10px; margin: 6px 0; cursor: pointer; }
+      .hint { font-size: 12px; opacity: 0.8; margin-top: 8px; }
+      #file { display: none; }
+      #status { font-size: 12px; margin-top: 8px; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <button id="exportBtn">Export open tab groups → JSON</button>
+    <button id="importBtn">Import JSON → recreate groups</button>
+    <input id="file" type="file" accept="application/json,.json" />
+    <div class="hint">
+      Export in Chrome → copy JSON file → import in Brave.
+    </div>
+    <div id="status"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>
