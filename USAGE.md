@@ -8,6 +8,7 @@ This guide explains how to load and use the extension in Chrome and Brave.
 
 Your extension folder should contain:
 
+- CHANGELOG.md
 - manifest.json
 - popup.html
 - popup.js
@@ -78,12 +79,12 @@ Repeat the same loading steps in Brave:
 # 6. Import Tab Groups into Brave
 
 1. Click extension icon
-2. Click:
-   **Import JSON → recreate groups**
-3. Select the exported JSON file
-4. Choose import target when prompted:
-   - **OK**: import into current window
-   - **Cancel**: recreate exported windows
+2. Open the exported JSON file in a text editor
+3. Copy all JSON text
+4. Paste JSON into the extension popup text area
+5. Click one of:
+   - **Import pasted JSON → recreate windows**
+   - **Import pasted JSON → current window**
 
 The extension will:
 

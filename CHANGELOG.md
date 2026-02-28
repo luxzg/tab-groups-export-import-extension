@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [1.2.0] - 2026-02-28 10:50:03 CET
+- Fixed export failure in MV3 service worker by replacing `URL.createObjectURL(...)` download flow with a `data:` URL download.
+- Reworked import UI to avoid popup file chooser crashes by switching to paste-based JSON import.
+- Replaced modal import target prompt with explicit import mode buttons in popup UI.
+- Added import progress resilience details to status summary (`failedTabs` counter).
+- Updated documentation to match the new paste-based import workflow.
+
 ## [1.1.0] - 2026-02-28 10:13:25 CET
 - Added import target prompt in popup:
   - OK imports into current window

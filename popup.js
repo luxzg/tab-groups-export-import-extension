@@ -1,8 +1,8 @@
 const exportBtn = document.getElementById("exportBtn");
-const importBtn = document.getElementById("importBtn");
-const fileInput = document.getElementById("file");
+const importNewBtn = document.getElementById("importNewBtn");
+const importCurrentBtn = document.getElementById("importCurrentBtn");
+const jsonInput = document.getElementById("jsonInput");
 const statusEl = document.getElementById("status");
-let importTarget = "new";
 
 function setStatus(msg) {
   statusEl.textContent = msg || "";
@@ -19,26 +19,23 @@ exportBtn.addEventListener("click", async () => {
   });
 });
 
-importBtn.addEventListener("click", () => {
-  importTarget = window.confirm("Import into current window?\n\nOK = current window\nCancel = recreate exported windows")
-    ? "current"
-    : "new";
-  fileInput.value = "";
-  fileInput.click();
-});
+function startImport(target) {
+  const text = (jsonInput.value || "").trim();
+  if (!text) {
+    setStatus("Paste exported JSON first.");
+    return;
+  }
 
-fileInput.addEventListener("change", async () => {
-  const f = fileInput.files?.[0];
-  if (!f) return;
+  setStatus("Importing...");
 
-  setStatus("Reading JSON...");
-  const text = await f.text();
-
-  chrome.runtime.sendMessage({ type: "IMPORT", jsonText: text, targetWindow: importTarget }, (resp) => {
+  chrome.runtime.sendMessage({ type: "IMPORT", jsonText: text, targetWindow: target }, (resp) => {
     if (chrome.runtime.lastError) {
       setStatus("Error: " + chrome.runtime.lastError.message);
       return;
     }
     setStatus(resp?.ok ? `Imported:\n${resp.summary}` : `Import failed:\n${resp?.error || "unknown error"}`);
   });
-});
+}
+
+importNewBtn.addEventListener("click", () => startImport("new"));
+importCurrentBtn.addEventListener("click", () => startImport("current"));

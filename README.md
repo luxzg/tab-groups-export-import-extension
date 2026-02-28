@@ -14,7 +14,7 @@ This extension solves that by:
 
 1. Reading all **currently open tab groups**
 2. Exporting them to a structured JSON file
-3. Recreating them in another browser from that JSON (to new windows or the current window)
+3. Recreating them in another browser from that JSON (to new windows or into the current window)
 
 It does **not** attempt to integrate with Brave Sync or Chrome Sync.  
 It is a clean, one-time migration tool.
@@ -125,7 +125,7 @@ Chrome → JSON → Brave
 
 1. Open all saved groups in Chrome
 2. Export JSON
-3. Import in Brave (choose: recreate windows or import into current window)
+3. Import in Brave (paste JSON text into popup, then choose import mode button)
 4. Close tab groups in Brave and Chrome (they will be saved automatically)
 5. Done
 
@@ -142,4 +142,3 @@ No manual regrouping or renaming required.
 * No profile database manipulation
 
 Safe, controlled migration only.
-

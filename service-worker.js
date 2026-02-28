@@ -24,15 +24,15 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       if (msg?.type === "EXPORT") {
         const data = await exportOpenGroups();
         const filename = `tab-groups-export-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
-        const blobUrl = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+        const json = JSON.stringify(data, null, 2);
+        const dataUrl = "data:application/json;charset=utf-8," + encodeURIComponent(json);
 
         await chrome.downloads.download({
-          url: blobUrl,
+          url: dataUrl,
           filename,
           saveAs: true
         });
 
-        // Note: blobUrl will be released when service worker is restarted; ok for download use.
         sendResponse({ ok: true, filename });
         return;
       }
@@ -126,6 +126,7 @@ async function importGroups(data, options = {}) {
   let windowsCreated = 0;
   let groupsCreated = 0;
   let tabsCreated = 0;
+  let tabsFailed = 0;
 
   let currentWindowId = null;
   if (importIntoCurrentWindow) {
@@ -140,16 +141,26 @@ async function importGroups(data, options = {}) {
 
     async function createTabsInWindow(tabSpecs) {
       const ids = [];
-      for (const spec of tabSpecs) {
+      for (let i = 0; i < tabSpecs.length; i++) {
+        const spec = tabSpecs[i];
         const url = sanitizeUrl(spec.url);
-        const t = await chrome.tabs.create({
-          windowId: targetWindowId,
-          url,
-          pinned: !!spec.pinned,
-          active: false
-        });
-        ids.push(t.id);
-        tabsCreated++;
+        try {
+          const t = await chrome.tabs.create({
+            windowId: targetWindowId,
+            url,
+            pinned: !!spec.pinned,
+            active: false
+          });
+          ids.push(t.id);
+          tabsCreated++;
+        } catch {
+          tabsFailed++;
+        }
+
+        // Yield periodically to keep browser responsive during large imports.
+        if ((i + 1) % 20 === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
       }
       return ids;
     }
@@ -198,7 +209,7 @@ async function importGroups(data, options = {}) {
     windowsCreated = 1;
   }
 
-  return `windows=${windowsCreated}, groups=${groupsCreated}, tabs=${tabsCreated}`;
+  return `windows=${windowsCreated}, groups=${groupsCreated}, tabs=${tabsCreated}, failedTabs=${tabsFailed}`;
 }
 
 function sanitizeUrl(url) {
