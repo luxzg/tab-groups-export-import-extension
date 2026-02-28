@@ -22,9 +22,14 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   (async () => {
     try {
       if (msg?.type === "EXPORT") {
-        const data = await exportOpenGroups();
-        const json = JSON.stringify(data, null, 2);
-        sendResponse({ ok: true, jsonText: json });
+        const result = await exportOpenGroups();
+        const json = JSON.stringify(result.data, null, 2);
+        sendResponse({
+          ok: true,
+          jsonText: json,
+          summary: `windows=${result.stats.windows}, groups=${result.stats.groups}, tabs=${result.stats.tabs}, skippedTabs=${result.stats.skippedTabs}`,
+          warning: result.stats.tabs > 100 ? "Warning: exported more than 100 tabs. Watch free memory before import." : ""
+        });
         return;
       }
 
@@ -72,8 +77,15 @@ async function exportOpenGroups() {
     version: 1,
     windows: []
   };
+  const stats = {
+    windows: 0,
+    groups: 0,
+    tabs: 0,
+    skippedTabs: 0
+  };
 
   for (const w of wins) {
+    stats.windows++;
     // Group tabs by groupId
     const tabList = w.tabs || [];
     const groupsMap = new Map(); // groupId -> {firstIndex, tabs: []}
@@ -81,11 +93,18 @@ async function exportOpenGroups() {
 
     for (let i = 0; i < tabList.length; i++) {
       const t = tabList[i];
+      const normalizedUrl = normalizeTabUrl(t.url || t.pendingUrl || "");
+      if (!normalizedUrl) {
+        stats.skippedTabs++;
+        continue;
+      }
+
       const tabEntry = {
-        url: t.url || t.pendingUrl || "about:blank",
+        url: normalizedUrl,
         pinned: !!t.pinned,
         active: !!t.active
       };
+      stats.tabs++;
 
       if (t.groupId != null && t.groupId !== -1) {
         if (!groupsMap.has(t.groupId)) groupsMap.set(t.groupId, { firstIndex: i, tabs: [] });
@@ -113,6 +132,7 @@ async function exportOpenGroups() {
         collapsed: !!meta.collapsed,
         tabs: v.tabs
       });
+      stats.groups++;
     }
 
     // Preserve group ordering as seen in the tab strip (first tab position per group).
@@ -125,7 +145,7 @@ async function exportOpenGroups() {
     });
   }
 
-  return out;
+  return { data: out, stats };
 }
 
 async function importGroups(data, options = {}) {
@@ -138,6 +158,7 @@ async function importGroups(data, options = {}) {
   let groupsCreated = 0;
   let tabsCreated = 0;
   let tabsFailed = 0;
+  let tabsSkipped = 0;
 
   let currentWindowId = null;
   if (importIntoCurrentWindow) {
@@ -154,7 +175,11 @@ async function importGroups(data, options = {}) {
       const ids = [];
       for (let i = 0; i < tabSpecs.length; i++) {
         const spec = tabSpecs[i];
-        const url = sanitizeUrl(spec.url);
+        const url = normalizeTabUrl(spec.url);
+        if (!url) {
+          tabsSkipped++;
+          continue;
+        }
         try {
           const t = await chrome.tabs.create({
             windowId: targetWindowId,
@@ -216,7 +241,7 @@ async function importGroups(data, options = {}) {
     windowsCreated = 1;
   }
 
-  return `windows=${windowsCreated}, groups=${groupsCreated}, tabs=${tabsCreated}, failedTabs=${tabsFailed}`;
+  return `windows=${windowsCreated}, groups=${groupsCreated}, tabs=${tabsCreated}, failedTabs=${tabsFailed}, skippedTabs=${tabsSkipped}`;
 }
 
 async function restoreGroupMetadata(groupId, groupData) {
@@ -229,14 +254,25 @@ async function restoreGroupMetadata(groupId, groupData) {
   } catch {}
 }
 
-function sanitizeUrl(url) {
-  if (!url) return "about:blank";
-  // Many internal URLs (chrome://, brave://) are blocked for extensions.
-  // Keep http(s), file (may be blocked by policy), and about:blank.
+function normalizeTabUrl(url) {
   const u = String(url).trim();
+  if (!u) return null;
+
+  // Ignore internal/special pages instead of converting to search fallback.
+  if (u === "about:blank") return null;
+  if (u.startsWith("about:")) return null;
+  if (u.startsWith("chrome://")) return null;
+  if (u.startsWith("chrome-extension://")) return null;
+  if (u.startsWith("brave://")) return null;
+  if (u.startsWith("edge://")) return null;
+  if (u.startsWith("vivaldi://")) return null;
+  if (u.startsWith("opera://")) return null;
+  if (u.startsWith("devtools://")) return null;
+  if (u.startsWith("view-source:")) return null;
+  if (u.startsWith("data:")) return null;
+  if (u.startsWith("javascript:")) return null;
+
   if (u.startsWith("http://") || u.startsWith("https://")) return u;
   if (u.startsWith("file://")) return u;
-  if (u === "about:blank") return u;
-  // Fallback: store as a search query if it's not a supported scheme
-  return "https://www.google.com/search?q=" + encodeURIComponent(u);
+  return null;
 }

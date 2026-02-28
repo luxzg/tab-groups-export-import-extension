@@ -93,7 +93,7 @@ The extension will:
 
 - Create windows (or use current window, based on your choice)
 - Recreate tab groups
-- Restore group title (with compatibility fallback logic)
+- Restore group title
 - Restore group color
 - Restore collapsed state
 - Restore pinned tabs
@@ -125,6 +125,7 @@ After this manual edit, the title is typically retained.
 Large imports (many groups/tabs/windows) can cause high memory usage.
 This is most noticeable when both source and destination browsers are open and many tabs are loading at once.
 If you hit memory pressure, import in smaller batches.
+The popup warns when more than 100 tabs were exported.
 
 ## Internal URLs
 
@@ -134,8 +135,8 @@ Tabs such as:
 - brave://*
 
 Cannot be recreated by extensions.
-
-They will be converted to a search query fallback.
+They are ignored during export/import.
+`about:*`, `about:blank`, `devtools://*`, `chrome-extension://*`, and similar internal/special URLs are also ignored.
 `file://` URLs are preserved, but opening them depends on browser file URL permissions.
 
 ---

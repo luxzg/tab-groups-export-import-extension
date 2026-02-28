@@ -20,7 +20,7 @@ function fetchLatestExportJson(onDone) {
     if (resp?.ok) {
       const jsonText = String(resp.jsonText || "");
       jsonInput.value = jsonText;
-      onDone(jsonText);
+      onDone({ jsonText, summary: String(resp.summary || ""), warning: String(resp.warning || "") });
       return;
     }
     setStatus(`Export failed:\n${resp?.error || "unknown error"}`);
@@ -29,18 +29,21 @@ function fetchLatestExportJson(onDone) {
 }
 
 exportBtn.addEventListener("click", () => {
-  fetchLatestExportJson((jsonText) => {
-    if (jsonText != null) {
-      setStatus("JSON loaded into text area.");
+  fetchLatestExportJson((result) => {
+    if (result != null) {
+      const lines = [];
+      if (result.summary) lines.push(`Exported:\n${result.summary}`);
+      if (result.warning) lines.push(result.warning);
+      setStatus(lines.join("\n"));
     }
   });
 });
 
 downloadBtn.addEventListener("click", () => {
-  fetchLatestExportJson((jsonText) => {
-    if (jsonText == null) return;
+  fetchLatestExportJson((result) => {
+    if (result == null) return;
     setStatus("Downloading JSON...");
-    chrome.runtime.sendMessage({ type: "DOWNLOAD_JSON", jsonText }, (resp) => {
+    chrome.runtime.sendMessage({ type: "DOWNLOAD_JSON", jsonText: result.jsonText }, (resp) => {
       if (chrome.runtime.lastError) {
         setStatus("Error: " + chrome.runtime.lastError.message);
         return;

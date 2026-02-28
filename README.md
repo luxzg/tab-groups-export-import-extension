@@ -76,6 +76,7 @@ Due to Chromium security restrictions:
 * ❌ Sync integration
 
 This tool only works with **currently open tabs and open tab groups**.
+Internal/special pages are ignored during export/import (not converted to search URLs).
 
 ---
 
@@ -145,6 +146,21 @@ No manual regrouping or renaming required.
 - Large import memory risk:
   importing many windows/groups/tabs can spike memory usage because two browsers may be open with many tabs loading at once.
   Prefer smaller batches when possible.
+- Export warning threshold:
+  the popup warns when more than 100 tabs are exported.
+
+## Field Notes
+
+- Real-world run:
+  91 tabs across 20+ groups exported/imported in one pass.
+- Environment:
+  32GB RAM PC, source browser at ~34% memory before export.
+- Workflow:
+  export in Chrome, close Chrome tabs, import in Brave.
+- Result:
+  import completed in under 7 seconds, memory after import around 25%.
+- Practical takeaway:
+  watch free memory before large imports, especially if both browsers remain loaded with many tabs.
 
 ---
 

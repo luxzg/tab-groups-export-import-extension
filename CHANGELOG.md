@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## [1.5.0] - 2026-02-28 16:19:33 CET
+- Internal/special URLs are now ignored (not converted to Google search fallbacks):
+  - `about:*` / `about:blank`
+  - `chrome://*`, `brave://*`, `edge://*`, `vivaldi://*`, `opera://*`
+  - `devtools://*`, `chrome-extension://*`, `view-source:*`, `data:*`, `javascript:*`
+- Export status now reports detailed summary in popup:
+  - `Exported: windows=..., groups=..., tabs=..., skippedTabs=...`
+- Added popup warning when more than 100 tabs are exported.
+- `Download JSON` continues to refresh export data first, then downloads the fresh JSON.
+- Updated README and USAGE with:
+  - internal-page ignore behavior
+  - 100+ tabs warning
+  - real-world 91 tabs / 20+ groups benchmark notes and memory guidance
+
 ## [1.4.0] - 2026-02-28 12:03:58 CET
 - Renamed popup buttons for clarity:
   - `Export tab data`
