@@ -55,9 +55,11 @@ Once they are open, proceed.
 
 1. Click the extension icon
 2. Click:
-   **Export open tab groups → JSON**
-3. Save the generated JSON file
-4. The same JSON content is also automatically placed in the popup text area for copy/paste use
+   **Read open tab groups → JSON in text area**
+3. JSON is placed in popup text area for copy/paste use
+4. Optional: click
+   **Download JSON from text area**
+   to save it as a file
 
 You now have a portable snapshot.
 

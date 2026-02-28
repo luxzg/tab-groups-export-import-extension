@@ -23,8 +23,19 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     try {
       if (msg?.type === "EXPORT") {
         const data = await exportOpenGroups();
-        const filename = `tab-groups-export-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
         const json = JSON.stringify(data, null, 2);
+        sendResponse({ ok: true, jsonText: json });
+        return;
+      }
+
+      if (msg?.type === "DOWNLOAD_JSON") {
+        const json = String(msg.jsonText || "");
+        if (!json.trim()) throw new Error("No JSON provided.");
+
+        // Validate format before download so exported files stay consistent.
+        JSON.parse(json);
+
+        const filename = `tab-groups-export-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
         const dataUrl = "data:application/json;charset=utf-8," + encodeURIComponent(json);
 
         await chrome.downloads.download({
@@ -33,7 +44,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
           saveAs: true
         });
 
-        sendResponse({ ok: true, filename, jsonText: json });
+        sendResponse({ ok: true, filename });
         return;
       }
 

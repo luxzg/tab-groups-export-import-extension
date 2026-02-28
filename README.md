@@ -13,8 +13,9 @@ When migrating between Chromium-based browsers, there is no native way to transf
 This extension solves that by:
 
 1. Reading all **currently open tab groups**
-2. Exporting them to a structured JSON file and placing JSON in popup text area for immediate copy/paste
-3. Recreating them in another browser from that JSON (to new windows or into the current window)
+2. Reading open tab groups into popup JSON text area for immediate copy/paste
+3. Optionally downloading that same JSON via a separate download button
+4. Recreating them in another browser from that JSON (to new windows or into the current window)
 
 It does **not** attempt to integrate with Brave Sync or Chrome Sync.  
 It is a clean, one-time migration tool.
@@ -124,12 +125,13 @@ Migration scenario:
 Chrome → JSON → Brave
 
 1. Open all saved groups in Chrome
-2. Export JSON
-   - File save dialog appears (normal export file)
-   - Same JSON is also inserted into popup text area for direct copy/paste
-3. Import in Brave (paste JSON text into popup, then choose import mode button)
-4. Close tab groups in Brave and Chrome (they will be saved automatically)
-5. Done
+2. Read JSON into popup text area
+   - No file dialog opens
+   - JSON is immediately available for copy/paste
+3. (Optional) click download button to save JSON file
+4. Import in Brave (paste JSON text into popup, then choose import mode button)
+5. Close tab groups in Brave and Chrome (they will be saved automatically)
+6. Done
 
 No manual regrouping or renaming required.
 

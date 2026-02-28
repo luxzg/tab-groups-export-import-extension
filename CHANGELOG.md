@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [1.3.1] - 2026-02-28 11:12:08 CET
+- Split export into two separate actions:
+  - Read open tab groups into popup JSON text area
+  - Download JSON from text area
+- Prevented popup from closing during export read step so copy/paste can be done immediately.
+- Added `DOWNLOAD_JSON` service-worker action that validates JSON before saving.
+- Updated README and USAGE to document the new two-button export flow.
+
 ## [1.3.0] - 2026-02-28 11:06:15 CET
 - Export now also returns JSON text to popup and auto-populates the text area for direct copy/paste.
 - File download export flow is kept unchanged (`saveAs` dialog still shown).
